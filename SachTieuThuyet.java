@@ -1,28 +1,21 @@
-public class SachTieuThuyet extends Sach {
+// Lớp con kế thừa từ Sach thể hiện ""tính kế thừa""
+// Có cách tính giá bán riêng → thể hiện "đa hình"
+public class SachTieuThuyetTuan9 extends SachTuan9 {
     private String theLoai;
-    private boolean laSachSeries;
+    private boolean laSeries;
 
-    public SachTieuThuyet(String maSach, String tieuDe, String tacGia, int namXuatBan, int soLuong,
-            double giaCoBan, String theLoai, boolean laSachSeries) {
-        super(maSach, tieuDe, tacGia, namXuatBan, soLuong, giaCoBan);
-        this.theLoai = theLoai;
-        this.laSachSeries = laSachSeries;
+    public SachTieuThuyetTuan9(String ma, String td, String tg, int nam, int sl, double gia, String tl, boolean ls) {
+        super(ma, td, tg, nam, sl, gia);
+        this.theLoai = tl;
+        this.laSeries = ls;
+    }
+
+    public SachTieuThuyetTuan9() {
     }
 
     @Override
     public double tinhGiaBan() {
-        return getGiaCoBan() + (laSachSeries ? 15000 : 0);
-    }
-
-    @Override
-    public boolean kiemTraTonKho(int soLuongToiThieu) {
-        return getSoLuong() >= soLuongToiThieu;
-    }
-
-    @Override
-    public void capNhatViTri(String viTriMoi) {
-        setViTri(viTriMoi);
-        System.out.println("Da cap nhat vi tri sach giao trinh thanh: " + viTriMoi);
+        return giaCoBan + (laSeries ? 15000 : 0);
     }
 
     @Override
