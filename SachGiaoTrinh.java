@@ -1,31 +1,21 @@
-public class SachGiaoTrinh extends Sach {
-    private String monHoc;
-    private String capDo;
+// Lớp con kế thừa từ Sach → thể hiện **tính kế thừa**
+// Ghi đè phương thức tinhGiaBan → thể hiện **đa hình**
+public class SachGiaoTrinhTuan9 extends SachTuan9 {
+    private String monHoc, capDo;
 
-    public SachGiaoTrinh(String maSach, String tieuDe, String tacGia, int namXuatBan, int soLuong,
-            double giaCoBan, String monHoc, String capDo) {
-        super(maSach, tieuDe, tacGia, namXuatBan, soLuong, giaCoBan);
-        this.monHoc = monHoc;
-        this.capDo = capDo;
+    public SachGiaoTrinhTuan9(String ma, String td, String tg, int nam, int sl, double gia, String mh, String cd) {
+        super(ma, td, tg, nam, sl, gia); // Gọi constructor lớp cha
+        this.monHoc = mh;
+        this.capDo = cd;
+    }
+
+    public SachGiaoTrinhTuan9() {
     }
 
     @Override
     public double tinhGiaBan() {
-        int soNam = 2025 - getNamXuatBan();
-        if (soNam < 0)
-            soNam = 0;
-        return getGiaCoBan() + soNam * 5000;
-    }
-
-    @Override
-    public boolean kiemTraTonKho(int soLuongToiThieu) {
-        return getSoLuong() >= soLuongToiThieu;
-    }
-
-    @Override
-    public void capNhatViTri(String viTriMoi) {
-        setViTri(viTriMoi);
-        System.out.println("Da cap nhat vi tri sach giao trinh thanh: " + viTriMoi);
+        int soNam = Math.max(0, 2025 - namXuatBan);
+        return giaCoBan + soNam * 5000;
     }
 
     @Override
