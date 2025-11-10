@@ -1,22 +1,68 @@
-public abstract class Sach implements IGiaBan {
-    private String maSach;
-    private String tieuDe;
-    private String tacGia;
-    private int namXuatBan;
-    private int soLuong;
-    private double giaCoBan;
-    private String viTri; // Thêm thuộc tính mới (mở rộng)
+import java.io.*;
+import java.util.Scanner;
 
-    public Sach(String maSach, String tieuDe, String tacGia, int namXuatBan, int soLuong, double giaCoBan) {
+// Lớp trừu tượng Sach thể hiện tính: trừu tượng + đóng gói
+// Dùng để gom nhóm các thuộc tính và hành vi chung cho mọi loại sách
+public abstract class SachTuan9 implements IGiaBan, IKiemKe, Serializable {
+    // ===== Thuộc tính (Đóng gói dữ liệu) =====
+    protected String maSach, tieuDe, tacGia, viTri;
+    protected int namXuatBan, soLuong;
+    protected double giaCoBan;
+
+    // ===== Constructor =====
+    public SachTuan9() {
+    }
+
+    public SachTuan9(String maSach, String tieuDe, String tacGia, int namXuatBan, int soLuong, double giaCoBan) {
         this.maSach = maSach;
         this.tieuDe = tieuDe;
         this.tacGia = tacGia;
         this.namXuatBan = namXuatBan;
         this.soLuong = soLuong;
         this.giaCoBan = giaCoBan;
-        this.viTri = "Chua xac dinh"; // Mặc định
+        this.viTri = "Chua xac dinh";
     }
 
+    // Hàm nhập thông tin chung (giúp giảm trùng lặp code)
+    public void nhapThongTinChung(Scanner sc) {
+        System.out.print("Ma sach: ");
+        maSach = sc.nextLine();
+        System.out.print("Tua de: ");
+        tieuDe = sc.nextLine();
+        System.out.print("Tac gia: ");
+        tacGia = sc.nextLine();
+        System.out.print("Nam XB: ");
+        namXuatBan = Integer.parseInt(sc.nextLine());
+        System.out.print("So luong: ");
+        soLuong = Integer.parseInt(sc.nextLine());
+        System.out.print("Gia co ban: ");
+        giaCoBan = Double.parseDouble(sc.nextLine());
+        System.out.print("Vi tri: ");
+        viTri = sc.nextLine();
+    }
+
+    // Phương thức trừu tượng → thể hiện tính đa hình
+    public abstract double tinhGiaBan();
+
+    // Override từ IKiemKe
+    @Override
+    public boolean kiemTraTonKho(int soLuongToiThieu) {
+        return soLuong >= soLuongToiThieu;
+    }
+
+    @Override
+    public void capNhatViTri(String viTriMoi) {
+        this.viTri = viTriMoi;
+        System.out.println("Đã cập nhật vị trí: " + viTriMoi);
+    }
+
+    // Hỗ trợ lưu file CSV
+    public String toCSV() {
+        return getClass().getSimpleName() + "," + maSach + "," + tieuDe + "," + tacGia + "," +
+                namXuatBan + "," + soLuong + "," + giaCoBan + "," + viTri;
+    }
+
+    // Getter / Setter thể hiện tính "đóng gói""""
     public String getMaSach() {
         return maSach;
     }
@@ -53,10 +99,6 @@ public abstract class Sach implements IGiaBan {
         this.tacGia = tacGia;
     }
 
-    public void setNamXuatBan(int namXuatBan) {
-        this.namXuatBan = namXuatBan;
-    }
-
     public void setSoLuong(int soLuong) {
         this.soLuong = soLuong;
     }
@@ -64,14 +106,6 @@ public abstract class Sach implements IGiaBan {
     public void setGiaCoBan(double giaCoBan) {
         this.giaCoBan = giaCoBan;
     }
-
-    public void setViTri(String viTri) {
-        this.viTri = viTri;
-    }
-
-    public abstract boolean kiemTraTonKho(int soLuongToiThieu);
-
-    public abstract void capNhatViTri(String viTriMoi);
 
     @Override
     public String toString() {
