@@ -1,29 +1,32 @@
 
-// Interface thể hiện tính "trừu tượng""
-// Xác định các hành vi cơ bản của một hệ thống quản lý sách
-import java.util.List;
-
 public interface IQuanLySach {
-    void themSach(SachTuan9 s);
 
-    SachTuan9 timKiemTheoMa(String maSach);
+    // Chức năng cơ bản
+    void themSach(Sach s);
 
-    List<SachTuan9> timKiemTheoTieuDe(String tuKhoa);
-
-    List<SachTuan9> timKiemTheoTacGia(String tenTacGia);
+    Sach timKiemTheoMa(String maSach);
 
     boolean xoaSach(String maSach);
 
-    boolean capNhatSach(String maSach, SachTuan9 thongTinMoi);
+    boolean capNhatSach(String maSach, Sach thongTinMoi);
 
     void hienThiTatCa();
 
-    // Thêm mới các chức năng được yêu cầu trong nhận xét:
+    // MỞ RỘNG: Tìm kiếm theo tiêu đề (keyword)
+    java.util.List<Sach> timKiemTheoTieuDe(String tuKhoa);
+
+    // MỞ RỘNG: Tìm kiếm theo tác giả
+    java.util.List<Sach> timKiemTheoTacGia(String tenTacGia);
+
+    // MỞ RỘNG: Sắp xếp theo giá bán (tăng/giảm)
     void sapXepTheoGia(boolean tangDan);
 
+    // MỞ RỘNG: Tính tổng giá trị kho (giaBan * soLuong)
     double tinhTongGiaTriKho();
 
+    // MỞ RỘNG: Xuất dữ liệu ra file CSV
     void luuCSV(String filePath);
 
+    // MỞ RỘNG: Nạp dữ liệu từ file CSV
     void napTuCSV(String filePath);
 }
