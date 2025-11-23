@@ -1,13 +1,15 @@
+// MỞ RỘNG: Lớp hiện thực toàn bộ chức năng quản lý sách
+// Có tìm kiếm nâng cao, sắp xếp theo giá, thống kê kho, lưu/nạp CSV
+
 import java.io.*;
 import java.util.*;
 
-// Lớp hiện thực interface thể hiện: đa hình và đóng gói
-// Đã thêm xử lý ngoại lệ (try-catch) cho toàn bộ thao tác với file và dữ liệu
 public class QuanLySachImpl implements IQuanLySach {
-    private List<SachTuan9> ds = new ArrayList<>();
+
+    private List<Sach> ds = new ArrayList<>();
 
     @Override
-    public void themSach(SachTuan9 s) {
+    public void themSach(Sach s) {
         try {
             ds.add(s);
             System.out.println("Da them: " + s.getTieuDe());
@@ -17,41 +19,49 @@ public class QuanLySachImpl implements IQuanLySach {
     }
 
     @Override
-    public SachTuan9 timKiemTheoMa(String ma) {
+    public Sach timKiemTheoMa(String ma) {
         try {
-            return ds.stream().filter(s -> s.getMaSach().equalsIgnoreCase(ma)).findFirst().orElse(null);
+            // MỞ RỘNG: tìm kiếm bằng Stream API
+            return ds.stream()
+                    .filter(s -> s.getMaSach().equalsIgnoreCase(ma))
+                    .findFirst()
+                    .orElse(null);
         } catch (Exception e) {
-            System.out.println("Loi khi tim kiem theo ma: " + e.getMessage());
+            System.out.println("Loi tim kiem theo ma: " + e.getMessage());
             return null;
         }
     }
 
     @Override
-    public List<SachTuan9> timKiemTheoTieuDe(String tuKhoa) {
-        List<SachTuan9> kq = new ArrayList<>();
+    public List<Sach> timKiemTheoTieuDe(String tuKhoa) {
+        List<Sach> kq = new ArrayList<>();
         try {
+            // MỞ RỘNG: tìm kiếm theo tựa đề
             tuKhoa = tuKhoa.toLowerCase();
-            for (SachTuan9 s : ds) {
-                if (s.getTieuDe().toLowerCase().contains(tuKhoa))
+            for (Sach s : ds) {
+                if (s.getTieuDe().toLowerCase().contains(tuKhoa)) {
                     kq.add(s);
+                }
             }
         } catch (Exception e) {
-            System.out.println("Loi khi tim kiem theo tua de: " + e.getMessage());
+            System.out.println("Loi tim kiem theo tua de: " + e.getMessage());
         }
         return kq;
     }
 
     @Override
-    public List<SachTuan9> timKiemTheoTacGia(String tenTG) {
-        List<SachTuan9> kq = new ArrayList<>();
+    public List<Sach> timKiemTheoTacGia(String tenTG) {
+        List<Sach> kq = new ArrayList<>();
         try {
+            // MỞ RỘNG: tìm kiếm theo tác giả
             tenTG = tenTG.toLowerCase();
-            for (SachTuan9 s : ds) {
-                if (s.getTacGia().toLowerCase().contains(tenTG))
+            for (Sach s : ds) {
+                if (s.getTacGia().toLowerCase().contains(tenTG)) {
                     kq.add(s);
+                }
             }
         } catch (Exception e) {
-            System.out.println("Loi khi tim kiem theo tac gia: " + e.getMessage());
+            System.out.println("Loi tim kiem theo tac gia: " + e.getMessage());
         }
         return kq;
     }
@@ -59,9 +69,10 @@ public class QuanLySachImpl implements IQuanLySach {
     @Override
     public boolean xoaSach(String ma) {
         try {
-            SachTuan9 s = timKiemTheoMa(ma);
-            if (s == null)
+            Sach s = timKiemTheoMa(ma);
+            if (s == null) {
                 return false;
+            }
             ds.remove(s);
             return true;
         } catch (Exception e) {
@@ -70,26 +81,60 @@ public class QuanLySachImpl implements IQuanLySach {
         }
     }
 
-    // Chỉ xử lý cập nhật ở 1 nơi, có try-catch
     @Override
-    public boolean capNhatSach(String ma, SachTuan9 thongTinMoi) {
+    public boolean capNhatSach(String ma, Sach thongTinMoi) {
         try {
-            SachTuan9 s = timKiemTheoMa(ma);
-            if (s == null)
+            Sach s = timKiemTheoMa(ma);
+            if (s == null) {
                 return false;
+            }
 
-            if (thongTinMoi.getTieuDe() != null)
+            // MỞ RỘNG: cập nhật các trường chung
+            if (thongTinMoi.getTieuDe() != null) {
                 s.setTieuDe(thongTinMoi.getTieuDe());
-            if (thongTinMoi.getTacGia() != null)
+            }
+
+            if (thongTinMoi.getTacGia() != null) {
                 s.setTacGia(thongTinMoi.getTacGia());
-            if (thongTinMoi.getSoLuong() >= 0)
+            }
+
+            if (thongTinMoi.getSoLuong() >= 0) {
                 s.setSoLuong(thongTinMoi.getSoLuong());
-            if (thongTinMoi.getGiaCoBan() > 0)
+            }
+
+            if (thongTinMoi.getGiaCoBan() >= 0) {
                 s.setGiaCoBan(thongTinMoi.getGiaCoBan());
+            }
+
+            if (thongTinMoi.getViTri() != null) {
+                s.setViTri(thongTinMoi.getViTri());
+            }
+
+            // MỞ RỘNG: cập nhật thêm thông tin riêng cho sách giáo trình
+            if (s instanceof SachGiaoTrinh && thongTinMoi instanceof SachGiaoTrinh) {
+                SachGiaoTrinh cu = (SachGiaoTrinh) s;
+                SachGiaoTrinh moi = (SachGiaoTrinh) thongTinMoi;
+                if (moi.getMonHoc() != null) {
+                    cu.setMonHoc(moi.getMonHoc());
+                }
+                if (moi.getCapDo() != null) {
+                    cu.setCapDo(moi.getCapDo());
+                }
+            }
+            // MỞ RỘNG: cập nhật thêm thông tin riêng cho sách tiểu thuyết
+            else if (s instanceof SachTieuThuyet && thongTinMoi instanceof SachTieuThuyet) {
+                SachTieuThuyet cu = (SachTieuThuyet) s;
+                SachTieuThuyet moi = (SachTieuThuyet) thongTinMoi;
+                if (moi.getTheLoai() != null) {
+                    cu.setTheLoai(moi.getTheLoai());
+                }
+                cu.setLaSeries(moi.isLaSeries());
+            }
 
             return true;
+
         } catch (Exception e) {
-            System.out.println("Loi khi cap nhat sach: " + e.getMessage());
+            System.out.println("Loi cap nhat sach: " + e.getMessage());
             return false;
         }
     }
@@ -110,75 +155,97 @@ public class QuanLySachImpl implements IQuanLySach {
     @Override
     public void sapXepTheoGia(boolean tangDan) {
         try {
-            ds.sort((a, b) -> tangDan ? Double.compare(a.tinhGiaBan(), b.tinhGiaBan())
+            // MỞ RỘNG: sắp xếp theo giá bán
+            ds.sort((a, b) -> tangDan
+                    ? Double.compare(a.tinhGiaBan(), b.tinhGiaBan())
                     : Double.compare(b.tinhGiaBan(), a.tinhGiaBan()));
+
             System.out.println("Da sap xep danh sach theo gia " + (tangDan ? "tang dan" : "giam dan"));
+
+            // MỞ RỘNG: sau khi sắp xếp thì hiển thị luôn danh sách
+            hienThiTatCa();
         } catch (Exception e) {
-            System.out.println("Loi khi sap xep: " + e.getMessage());
+            System.out.println("Loi sap xep gia: " + e.getMessage());
         }
     }
 
     @Override
     public double tinhTongGiaTriKho() {
         try {
-            return ds.stream().mapToDouble(s -> s.tinhGiaBan() * s.getSoLuong()).sum();
+            // MỞ RỘNG: tổng giá trị = giá bán * số lượng
+            return ds.stream()
+                    .mapToDouble(s -> s.tinhGiaBan() * s.getSoLuong())
+                    .sum();
         } catch (Exception e) {
-            System.out.println("Loi khi tinh tong gia tri kho: " + e.getMessage());
+            System.out.println("Loi tinh tong gia tri kho: " + e.getMessage());
             return 0;
         }
     }
 
-    // Lưu file CSV có xử lý ngoại lệ
     @Override
     public void luuCSV(String path) {
         try (PrintWriter pw = new PrintWriter(new File(path))) {
+
             if (ds.isEmpty()) {
-                System.out.println("Danh sach trong, khong co du lieu de luu!");
+                System.out.println("Danh sach trong, khong co du lieu!");
                 return;
             }
-            for (SachTuan9 s : ds) {
+
+            // MỞ RỘNG: ghi theo định dạng CSV
+            for (Sach s : ds) {
                 pw.println(s.toCSV());
             }
-            System.out.println("Da luu du lieu vao file: " + path);
-        } catch (FileNotFoundException e) {
-            System.out.println("Khong tim thay file hoac duong dan khong hop le!");
-        } catch (IOException e) {
-            System.out.println("Loi IO khi luu file: " + e.getMessage());
+
+            System.out.println("Da luu file: " + path);
+
         } catch (Exception e) {
-            System.out.println("Loi khac khi luu file: " + e.getMessage());
+            System.out.println("Loi luu file: " + e.getMessage());
         }
     }
 
-    // Nạp dữ liệu từ CSV có xử lý ngoại lệ
     @Override
     public void napTuCSV(String path) {
         try (BufferedReader br = new BufferedReader(new FileReader(path))) {
+
             ds.clear();
             String line;
+
             while ((line = br.readLine()) != null) {
                 String[] p = line.split(",");
-                if (p.length < 8)
-                    continue; // tránh lỗi nếu file thiếu dữ liệu
+                if (p.length < 8) {
+                    continue;
+                }
+
+                Sach s;
 
                 if (p[0].equalsIgnoreCase("SachGiaoTrinh")) {
-                    ds.add(new SachGiaoTrinhTuan9(p[1], p[2], p[3],
-                            Integer.parseInt(p[4]), Integer.parseInt(p[5]),
-                            Double.parseDouble(p[6]), "Mon tu file", "Cap do"));
+                    s = new SachGiaoTrinh(
+                            p[1], p[2], p[3],
+                            Integer.parseInt(p[4]),
+                            Integer.parseInt(p[5]),
+                            Double.parseDouble(p[6]),
+                            "Mon tu file",
+                            "Cap do");
                 } else {
-                    ds.add(new SachTieuThuyetTuan9(p[1], p[2], p[3],
-                            Integer.parseInt(p[4]), Integer.parseInt(p[5]),
-                            Double.parseDouble(p[6]), "The loai tu file", false));
+                    s = new SachTieuThuyet(
+                            p[1], p[2], p[3],
+                            Integer.parseInt(p[4]),
+                            Integer.parseInt(p[5]),
+                            Double.parseDouble(p[6]),
+                            "The loai tu file",
+                            false);
                 }
+
+                // MỞ RỘNG: nạp thêm vị trí lưu kho
+                s.setViTri(p[7]);
+
+                ds.add(s);
             }
-            System.out.println("Da nap du lieu tu file: " + path);
-        } catch (FileNotFoundException e) {
-            System.out.println("Khong tim thay file: " + path);
-        } catch (IOException e) {
-            System.out.println("Loi IO khi nap file: " + e.getMessage());
-        } catch (NumberFormatException e) {
-            System.out.println("Loi dinh dang so trong file CSV!");
+
+            System.out.println("Da nap file: " + path);
+
         } catch (Exception e) {
-            System.out.println("Loi khac khi nap file: " + e.getMessage());
+            System.out.println("Loi nap file: " + e.getMessage());
         }
     }
 }
